@@ -60,17 +60,16 @@ install_chrome() {
     # hanze mail etc. supposedly works best with google chrome, which
     # is not in the binary packages of Debian. It can be installed however ...
 
-    # Run the following command to create /etc/apt/sources.list.d/google-chrome.list file:
-    sudo touch "/etc/apt/sources.list.d/google-chrome.list"
-    echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee -a  "/etc/apt/sources.list.d/google-chrome.list" > /dev/null   
-    # This uses currently recommend approach (/etc/apt/trusted.gpg.d), because apt-key command is deprecated.
-    sudo -i
-    wget -O- https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor > /etc/apt/trusted.gpg.d/google.gpg
-    exit
+    # Download Google's signing key and add it to the list of keys you trust
+    wget -qO - https://dl.google.com/linux/linux_signing_key.pub | sudo gpg --dearmor -o /usr/share/keyrings/googlechrome-linux-keyring.gpg
+
+    # Run the following command to add Googles repository to those used by apt
+    echo "deb [arch=amd64 signed-by=/usr/share/keyrings/googlechrome-linux-keyring.gpg] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list 
 
     sudo apt update
     sudo apt install -y google-chrome-stable
 }
+
 
 
 install_gnome_stuff() {
@@ -237,10 +236,6 @@ sudo apt install -y texlive-latex-recommended
 sudo apt install -y texlive-latex-extra
 sudo apt install -y librsvg2-bin
 sudo apt install -y wkhtmltopdf
-
-sudo apt install -y fonts-ubuntu
-sudo apt install -y fonts-ubuntu-console
-
 
 ###############################################################################
 # Installation of software used in some of our courses
